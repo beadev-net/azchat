@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chat em Tempo Real</title>
+    <style>
+        body {
+            background-color: #0f0f2d;
+            color: #f4f4f9;
+            font-family: 'Orbitron', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #0fffc1;
+            text-shadow: 0 0 10px #0fffc1, 0 0 20px #00bfa5;
+            margin-bottom: 5px;
+        }
+
+
+        h3 {
+            font-size: 1.7rem;
+            color: #0fffc1;
+            text-shadow: 0 0 10px #0fffc1, 0 0 20px #00bfa5;
+        }
+
+        input[type="text"],
+        textarea {
+            background-color: #1e1e3f;
+            color: #f4f4f9;
+            border: 1px solid #00bfa5;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 1rem;
+            width: 80%;
+            margin-bottom: 15px;
+            outline: none;
+            box-shadow: 0 0 10px #00bfa5;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            border-color: #ff0080;
+            box-shadow: 0 0 10px #ff0080, 0 0 20px #ff0080;
+        }
+
+        textarea {
+            resize: none;
+            height: 150px;
+        }
+
+        button {
+            background-color: #ff0080;
+            color: #f4f4f9;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px #ff0080, 0 0 20px #ff0080;
+        }
+
+        button:hover {
+            background-color: #0fffc1;
+            box-shadow: 0 0 10px #0fffc1, 0 0 20px #00bfa5;
+        }
+
+        #messages {
+            background-color: #1e1e3f;
+            color: #f4f4f9;
+            border: 1px solid #00bfa5;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 1rem;
+            width: 80%;
+            box-shadow: 0 0 10px #00bfa5;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            min-height: 300px;
+        }
+
+
+        #messages::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        #messages::-webkit-scrollbar-track {
+            background: #1e1e3f;
+        }
+
+        #messages::-webkit-scrollbar-thumb {
+            background: #00bfa5;
+            border-radius: 5px;
+        }
+
+        #messages::-webkit-scrollbar-thumb:hover {
+            background: #ff0080;
+        }
+
+
+        select {
+            background-color: #1e1e3f;
+            color: #f4f4f9;
+            border: 1px solid #00bfa5;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 1rem;
+            width: 20%;
+            outline: none;
+            box-shadow: 0 0 10px #00bfa5, 0 0 20px #00bfa5;
+            appearance: none;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease-in-out;
+        }
+
+
+        select:hover {
+            border-color: #ff0080;
+            box-shadow: 0 0 10px #ff0080, 0 0 20px #ff0080;
+        }
+
+
+        select:focus {
+            border-color: #0fffc1;
+            box-shadow: 0 0 15px #0fffc1, 0 0 25px #0fffc1;
+
+        }
+
+
+        select option {
+            background-color: #1e1e3f;
+            color: #f4f4f9;
+            font-size: 1rem;
+            padding: 10px;
+        }
+
+
+        select::-ms-expand {
+            display: none;
+        }
+
+
+        select {
+            position: relative;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="10" height="6" viewBox="0 0 10 6"%3E%3Cpath fill="%2300bfa5" d="M5 6L0 0h10z"/%3E%3C/svg%3E');
+            background-repeat: no-repeat;
+            background-position: calc(100% - 10px) center;
+            background-size: 10px 6px;
+            padding-right: 30px;
+        }
+
+
+        .tooltip-container {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+
+        .tooltip-text {
+            visibility: hidden;
+            width: auto;
+            min-width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: left;
+            border-radius: 15px;
+            padding: 8px 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 14px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+
+        .tooltip-text::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -15px;
+            border-width: 15px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+
+
+        .tooltip-container:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .icon-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>AzChat
+        <div class="tooltip-container">
+            <div class="icon-container">
+                <svg class="svg-icon"
+                    style="width: 0.7em; height: 0.7em;vertical-align: middle;overflow: hidden; background-color: none;"
+                    viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M512 938.666667C276.352 938.666667 85.333333 747.648 85.333333 512S276.352 85.333333 512 85.333333s426.666667 191.018667 426.666667 426.666667-191.018667 426.666667-426.666667 426.666667z m0-85.333334a341.333333 341.333333 0 1 0 0-682.666666 341.333333 341.333333 0 0 0 0 682.666666z m-42.666667-170.666666h85.333334v85.333333h-85.333334v-85.333333z m0-84.992s85.333333-0.341333 85.333334 0C554.666667 554.922667 682.666667 512 682.666667 426.666667c0-94.293333-75.648-170.666667-170.282667-170.666667A170.666667 170.666667 0 0 0 341.333333 426.666667h85.333334c0-46.933333 38.4-85.333333 85.333333-85.333334s85.333333 38.4 85.333333 85.333334c0 38.4-128 100.992-128 171.008z"
+                        fill="#0fffc1" />
+                </svg>
+            </div>
+            <div class="tooltip-text">
+                <h4 style="text-align: center; text-decoration: underline;">Stack</h4>
+                <ul style="display: grid; gap: 15px;">
+                    <li>Azure Cache for Redis</li>
+                    <li>WebSocket</li>
+                    <li>AppService (WebApp)</li>
+                </ul>
+            </div>
+        </div>
+    </h1>
+    <span id="email"></span>
+    <div id="messages"></div>
+    <br />
+    <input type="text" id="message" placeholder="Type your message here" />
+    <button id="send" onclick="sendMessage()">Send</button>
+    <script>
+        (async function () {
+            const tls = location.protocol === 'https:' ? 'wss' : 'ws';
+            const host = "azchat-fpecdbdadcd7frhc.eastus-01.azurewebsites.net";
+            let email = null;
+
+            async function validateTokenWithGraph(token) {
+                const graphApiUrl = 'https://graph.microsoft.com/v1.0/me';
+
+                try {
+                    const hash = window.location.hash;
+                    const urlParams = new URLSearchParams(hash.replace('#', '?'));
+                    const token = urlParams.get('access_token');
+                    const response = await fetch(graphApiUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    if (!response.ok) {
+                        console.error('Token inválido ou expirado. Status:', response.status);
+                        window.location.href = '/';
+                    }
+                    const data = await response.json();
+                    email = data.userPrincipalName;
+                    document.getElementById('email').innerHTML = `<h3>Welcome, ${email}</h3>`;
+                    return true;
+                } catch (error) {
+                    console.error('Erro ao validar o token:', error);
+                    window.location.href = '/';
+                }
+            }
+
+            validateTokenWithGraph()
+
+            const ws = new WebSocket(`${tls}://${host}`);
+
+            ws.onmessage = (event) => {
+                const messagesBox = document.getElementById('messages');
+                console.log(event);
+                messagesBox.innerHTML += event.data + `\n`;
+            };
+
+            window.sendMessage = function sendMessage() {
+                const message = document.getElementById('message').value;
+                if (!email) {
+                    alert('Token inválido ou usuário não autenticado.');
+                    return;
+                }
+                ws.send(JSON.stringify({ email, message }));
+                document.getElementById('message').value = '';
+            };
+        })();
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const sendButton = document.getElementById('send');
+                if (sendButton) {
+                    sendButton.click();
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

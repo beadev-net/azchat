@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microsoft OAuth Login</title>
+
+    <style>
+        /* Estilo geral */
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f2f2f2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        /* Botão de login */
+        #login-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #0078d4;
+            /* Azul Microsoft */
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #login-button:hover {
+            background-color: #005a9e;
+            /* Azul mais escuro para hover */
+        }
+
+        #login-button:active {
+            background-color: #004578;
+            /* Azul ainda mais escuro para clique */
+            transform: scale(0.97);
+            /* Efeito de "pressionar" */
+        }
+
+        #login-button:focus {
+            outline: 2px solid #005a9e;
+            /* Foco visível */
+            outline-offset: 2px;
+        }
+
+        #login-button img {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+
+        .powered-by {
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .powered-by img {
+            vertical-align: middle;
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+        }
+
+        .login-container {
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <h1>Sign in to Your Account</h1>
+        <button id="login-button">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft Logo">
+            Login with Microsoft
+        </button>
+        <div class="powered-by">
+            Powered by Vinicius Morais Dutra
+        </div>
+    </div>
+
+    <script>
+        // Replace with your App Registration values
+        const CLIENT_ID = 'd3dd6d62-db7f-4bcf-9e82-f6d1fe33484e'; // Your App Registration client ID
+        const REDIRECT_URI = 'https://black-rock-08ad79f10-preview.centralus.4.azurestaticapps.net/chat.html'; // URL where the user will be redirected after login
+        const AUTH_ENDPOINT = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize';
+
+        document.getElementById('login-button').addEventListener('click', () => {
+            // Build the OAuth login URL
+            const authUrl = `${AUTH_ENDPOINT}?` +
+                `client_id=${encodeURIComponent(CLIENT_ID)}&` +
+                `response_type=token&` +
+                `redirect_uri=${encodeURIComponent(REDIRECT_URI)}&` +
+                `response_mode=fragment&` +
+                `scope=${encodeURIComponent('openid profile email User.Read')}&` +
+                `state=${encodeURIComponent('some-random-state')}`;
+
+            // Redirect the user to the login page
+            window.location.href = authUrl;
+        });
+    </script>
+</body>
+
+</html>
