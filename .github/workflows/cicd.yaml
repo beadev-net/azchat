@@ -1,0 +1,67 @@
+name: ci-pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v3
+
+      - name: Login no Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Login no ACR
+        run: |
+          az acr login --name ${{ vars.ACR_NAME }}
+
+      - name: Build e Push da Imagem Docker para o ACR
+        run: |
+          IMAGE_NAME=${{ vars.ACR_NAME }}.azurecr.io/${{ vars.IMAGE_REPOSITORY }}:${{ github.sha }}
+          az acr build --image $IMAGE_NAME --registry ${{ vars.ACR_NAME }} --build-arg GIT_HASH=${{ github.sha }} --file Dockerfile .
+          echo $IMAGE_NAME > image_tag.txt
+
+      - name: Armazenar a tag da imagem como artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-tag
+          path: image_tag.txt
+
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production 
+    needs: build
+    steps:
+      - name: Baixar a tag da imagem da pipeline de CI
+        uses: actions/download-artifact@v4
+        with:
+          name: image-tag
+      
+      - name: Ler a tag da imagem
+        run: |
+          IMAGE_NAME=$(cat image_tag.txt)
+          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
+
+      - name: Login no Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Login no ACR
+        run: |
+          az acr login --name ${{ vars.ACR_NAME }}
+
+      - name: Deploy para o WebApp do Azure
+        run: |
+          az webapp config container set \
+            --name ${{ vars.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
+            --container-image-name $IMAGE_NAME \
+            --container-registry-url https://${{ vars.ACR_NAME }}.azurecr.io

@@ -1,0 +1,21 @@
+<div class="flex flex-col items-center justify-center h-screen">
+    <div class="w-2/3">
+        <div class="container">
+            <h1 class="text-3xl font-bold text-indigo-400"><a class="text-violet-500" href="/chat"><i
+                        class="bi bi-arrow-left-circle-fill"></i></a> {{title}} - ID
+                        Token</h1>
+        </div>
+        <table class="table">
+            <tbody>
+                {{#each idTokenClaims}}
+                <tr>
+                    <td>{{@key}}</td>
+                    <td>{{this}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+        <br>
+        <a href="https://aka.ms/id-tokens" class="text-blue-500" target="_blank">Learn about claims in this ID token</a>
+    </div>
+</div>

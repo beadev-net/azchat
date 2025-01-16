@@ -1,0 +1,19 @@
+services:
+  redis:
+    image: redis:7.4-alpine
+    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+    ports:
+      - "6379:6379"
+    volumes:
+      - .docker/redis:/usr/local/etc/redis
+
+  azchat:
+    build:
+      context: .
+    ports:
+      - "3000:80"
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379

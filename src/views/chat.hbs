@@ -1,0 +1,139 @@
+<script type="text/javascript">
+    (async function () {
+        const tls = location.protocol === 'https:' ? 'wss' : 'ws';
+        const host = '{{websocket_url}}';
+        let email = '{{username}}';
+
+        if (!email) {
+            window.location.href = '/';
+        }
+
+        const ws = new WebSocket(`${tls}://${host}`);
+
+        ws.onmessage = (event) => {
+            const m = JSON.parse(event.data);
+            const messagesBox = document.getElementById('messages');
+            const messageWrapper = document.createElement("div");
+            messageWrapper.classList.add("flex", "items-end", "space-x-2", "justify-end");
+
+            const avatar = document.createElement("div");
+            avatar.classList.add("w-10", "h-10", "rounded-full", "bg-gray-500", "text-white", "flex", "items-center", "justify-center", "font-bold");
+            avatar.title = m.email;
+            avatar.innerText = m.email[0].toUpperCase();
+
+            const messageBubble = document.createElement("div");
+            messageBubble.classList.add("bg-blue-500", "text-white", "px-4", "py-2", "rounded-lg", "shadow-md", "max-w-xs", "max-w-sm");
+
+            const wrapper = document.createElement("div");
+            wrapper.classList.add("flex", "flex-col", "justify-between");
+
+            const textElement = document.createElement("span");
+            textElement.innerText = m.message;
+
+            wrapper.appendChild(textElement);
+            messageBubble.appendChild(wrapper);
+
+            messageWrapper.appendChild(messageBubble);
+            messageWrapper.appendChild(avatar);
+
+            messagesBox.appendChild(messageWrapper);
+            messagesBox.scrollTop = messagesBox.scrollHeight;
+        };
+
+        window.sendMessage = function sendMessage() {
+            const message = document.getElementById('message').value;
+            if (!email && '<%= oauth_enabled %>' == 'true') {
+                alert('Token inválido ou usuário não autenticado.');
+                return;
+            }
+            ws.send(JSON.stringify({ email: email ?? 'anonymous', message }));
+            document.getElementById('message').value = '';
+        };
+    })();
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            const sendButton = document.getElementById('send');
+            if (sendButton) {
+                sendButton.click();
+            }
+        }
+    });
+</script>
+<script>
+    tailwind.config = {
+        darkMode: 'class'
+    };
+
+    darkThemeIcon = `<i class="bi bi-lightbulb"></i>`;
+    lightThemeIcon = `<i class="bi bi-lightbulb-off"></i>`;
+    function toggleDarkMode() {
+        document.documentElement.classList.toggle('dark');
+        let darkMode = document.documentElement.classList.contains('dark') ? true : false;
+        document.getElementById('toggle-theme').innerHTML = darkMode ? darkThemeIcon : lightThemeIcon;
+        localStorage.setItem('darkMode', darkMode);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        if (localStorage.getItem('darkMode') == 'true') {
+            document.getElementById('toggle-theme').innerHTML = darkThemeIcon;
+            document.documentElement.classList.add('dark');
+        } else {
+            document.getElementById('toggle-theme').innerHTML = lightThemeIcon;
+        }
+    });
+</script>
+<div
+    class="bg-white w-full border max-w-2xl p-6 shadow-xl rounded-lg flex flex-col space-y-4 dark:bg-gray-800 dark:border-gray-700 mx-[8px]">
+    <div class="flex items-center justify-between">
+        <h1 class="text-3xl font-bold text-blue-600 dark:text-blue-400">
+            <h3>Welcome, {{username}}</h3>
+            <div class="tooltip-container">
+                <div class="icon-container">
+                    <i class="bi bi-question-circle-fill"></i>
+                </div>
+                <div class="tooltip-text">
+                    <h4 style="text-align: center; text-decoration: underline;">Stack</h4>
+                    <ul style="display: grid; gap: 10px; list-style: disc;">
+                        {{#each stack}}
+                        <li>
+                            {{this}}
+                        </li>
+                        {{/each}}
+                    </ul>
+                </div>
+            </div>
+        </h1>
+    </div>
+    <div class="chat-box overflow-y-auto min-h-[400px] max-h-[400px] p-4 bg-white dark:bg-gray-800 flex flex-col space-y-3"
+        id="messages">
+        <!-- Messages will appear here -->
+    </div>
+    <div class="flex justify-center space-x-3">
+        <button id="toggle-theme" onclick="toggleDarkMode()"
+            class="px-3 py-2 rounded-full bg-yellow-600 text-white hover:bg-yellow-800" title="Toggle Mode"><i
+                class="bi bi-lightbulb-off"></i></button>
+    </div>
+    <div class="flex items-center p-3 rounded-md shadow-md dark:shadow-gray-950">
+        <input id="message" type="text"
+            class="w-full py-2 px-4 mr-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+            placeholder="Type your message here">
+        <button id="send" onclick="sendMessage()"
+            class="bg-blue-500 py-2 px-3 rounded-full hover:bg-blue-800 text-white focus:outline-none focus:ring-2 focus:ring-black"><i
+                class="bi bi-send-fill"></i></button>
+    </div>
+    <div class="flex justify-end space-x-3">
+        <span class="text-xs">Vinicius M. Dutra</span>
+    </div>
+    <div class="row justify-content-center text-center mt-5">
+        <div class="col-md-12 d-flex justify-content-between align-items-center flex-column">
+            <a href="/users/id" title="View ID token claims"
+                class="bg-green-500 py-2 px-3 rounded-full hover:bg-green-800 text-white focus:outline-none focus:ring-2 focus:ring-black"><i
+                    class="bi bi-key-fill"></i></a>
+            <!-- <a href="/auth/acquireToken">Acquire a token to call the Microsoft Graph API</a> -->
+            <a href="/auth/signout" title="Sign out""
+            class="bg-fuchsia-500 py-2 px-3 rounded-full hover:bg-fuchsia-800 text-white focus:outline-none focus:ring-2 focus:ring-black"><i class="bi bi-box-arrow-right"></i></a>
+        </div>
+    </div>
+</div>
