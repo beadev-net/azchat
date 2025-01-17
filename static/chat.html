@@ -74,6 +74,13 @@
             box-shadow: 0 0 10px #0fffc1, 0 0 20px #00bfa5;
         }
 
+        button:disabled {
+            background-color: #333;
+            color: #666;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
         #messages {
             background-color: #1e1e3f;
             color: #f4f4f9;
@@ -212,6 +219,7 @@
             align-items: center;
         }
     </style>
+    <script src="env.js"></script>
 </head>
 
 <body>
@@ -240,21 +248,18 @@
     <div id="messages"></div>
     <br />
     <input type="text" id="message" placeholder="Type your message here" />
-    <button id="send" onclick="sendMessage()">Send</button>
+    <button id="send" onclick="sendMessage()" disabled="true">Send</button>
     <script>
         (async function () {
-            const tls = location.protocol === 'https:' ? 'wss' : 'ws';
-            const host = "azchat-fpecdbdadcd7frhc.eastus-01.azurewebsites.net";
+            const sendButton = document.getElementById("send");
             let email = null;
 
             async function validateTokenWithGraph(token) {
-                const graphApiUrl = 'https://graph.microsoft.com/v1.0/me';
-
                 try {
                     const hash = window.location.hash;
                     const urlParams = new URLSearchParams(hash.replace('#', '?'));
                     const token = urlParams.get('access_token');
-                    const response = await fetch(graphApiUrl, {
+                    const response = await fetch(GRAPH_API_URL, {
                         method: 'GET',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -277,7 +282,12 @@
 
             validateTokenWithGraph()
 
-            const ws = new WebSocket(`${tls}://${host}`);
+            const ws = new WebSocket(`${BACKEND_HOST}`);
+
+            ws.onopen = (event) => {
+                console.log("WebSocket Connected");
+                sendButton.disabled = false;
+            };
 
             ws.onmessage = (event) => {
                 const messagesBox = document.getElementById('messages');

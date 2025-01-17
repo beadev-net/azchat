@@ -89,6 +89,7 @@
             align-items: center;
         }
     </style>
+    <script src="env.js"></script>
 </head>
 
 <body>
@@ -104,13 +105,7 @@
     </div>
 
     <script>
-        // Replace with your App Registration values
-        const CLIENT_ID = 'd3dd6d62-db7f-4bcf-9e82-f6d1fe33484e'; // Your App Registration client ID
-        const REDIRECT_URI = 'https://black-rock-08ad79f10-preview.centralus.4.azurestaticapps.net/chat.html'; // URL where the user will be redirected after login
-        const AUTH_ENDPOINT = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize';
-
         document.getElementById('login-button').addEventListener('click', () => {
-            // Build the OAuth login URL
             const authUrl = `${AUTH_ENDPOINT}?` +
                 `client_id=${encodeURIComponent(CLIENT_ID)}&` +
                 `response_type=token&` +
@@ -119,7 +114,6 @@
                 `scope=${encodeURIComponent('openid profile email User.Read')}&` +
                 `state=${encodeURIComponent('some-random-state')}`;
 
-            // Redirect the user to the login page
             window.location.href = authUrl;
         });
     </script>
