@@ -1,8 +1,24 @@
 # AzChat
 
-Websocket chat application using Azure Cloud Services.
-- Redis
+##### Websocket chat application using Azure Cloud Services.
+- Azure Redis
+- Azure Container Registry
 - WebApp
+- AppService Plan
+
+##### Using github actions for CI/CD:
+- Build and push docker image to Azure Container Registry
+- Deploy to Azure WebApp
+
+---
+
+### Local Development
+
+```sh
+make docker
+```
+
+---
 
 ### Az Login
 
@@ -10,16 +26,18 @@ Websocket chat application using Azure Cloud Services.
 az login
 ```
 
-### Container Registry Authentication
+### Setup Resources on Azure Cloud
 
 ```sh
-docker login acrmycontainers.azurecr.io -u <username> -p <password>
+make azure-setup
 ```
 
-```sh
-docker build . -t acrmycontainers.azurecr.io/azchat:<version>
-```
+---
+
+### Github Actions
 
 ```sh
-docker push acrmycontainers.azurecr.io/azchat:<version>
+az ad sp create-for-rbac --name "github-action" --role contributor --scopes /subscriptions/<subcription-id> --sdk-auth
 ```
+
+[Trigger Workflow](https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/triggering-a-workflow#defining-inputs-for-manually-triggered-workflows)
