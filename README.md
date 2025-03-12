@@ -1,10 +1,10 @@
 # AzChat
 
 ##### Websocket chat application using Azure Cloud Services.
-- Azure Redis
-- Azure Container Registry
-- WebApp
-- AppService Plan
+- Azure Redis (PubSub)
+- Azure Container Registry (Registry)
+- WebApp + AppService Plan (Workload)
+- Entra ID (Identity)
 
 ##### Using github actions for CI/CD:
 - Build and push docker image to Azure Container Registry
