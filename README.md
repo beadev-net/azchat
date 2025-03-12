@@ -1,4 +1,4 @@
-# AzChat 
+# AzChat!
 
 ##### Websocket chat application using Azure Cloud Services.
 - Azure Redis (PubSub)
