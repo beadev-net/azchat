@@ -13,7 +13,7 @@ COPY ./src/package*.json ./
 RUN npm install
 
 COPY ./src .
-COPY ./src/env.example .env
+COPY ./src/.env.example .env
 
 EXPOSE $PORT
 
