@@ -1,4 +1,5 @@
-FROM node:20-alpine
+#FROM node:20-alpine
+FROM mcr.microsoft.com/azure-functions/node:4-node20
 
 ARG BUILD_PORT=80
 ENV PORT=$BUILD_PORT
